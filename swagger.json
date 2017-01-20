@@ -1,0 +1,1083 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "QPP Beneficiary Reporting API",
+    "description": "An API for managing Group reporting"
+  },
+  "schemes": [
+    "http"
+  ],
+  "host": "54.173.143.97:3000",
+  "basePath": "/v1",
+  "definitions": {
+    "Id": {
+      "type": "string",
+      "example": "070ab431-1b44-868e-a432-076518ea4a22"
+    },
+    "TIN": {
+      "type": "string",
+      "example": "123456789"
+    },
+    "NPI": {
+      "type": "string",
+      "example": "9876543210"
+    },
+    "DateTime": {
+      "type": "string",
+      "example": "2016-11-16T06:43:32.000Z"
+    },
+    "HelpDeskTicketType": {
+      "type": "string",
+      "example": "ACCT-QPP-99-33"
+    },
+    "MediCareIdType": {
+      "type": "string",
+      "example": "123456789"
+    },
+    "MeasureIdType": {
+      "type": "string",
+      "example": "QC_889_1"
+    },
+    "ClinicIdType": {
+      "type": "string",
+      "example": "88990800-990"
+    },
+    "GenderType": {
+      "type": "string",
+      "enum": [
+        "MALE",
+        "FEMALE",
+        "UNKNOWN"
+      ]
+    },
+    "MedicalRecordFoundType": {
+      "type": "string",
+      "enum": [
+        "YES",
+        "MEDICAL_RECORD_NOT_FOUND",
+        "NOT_QUALIFIED_FOR_SAMPLE"
+      ]
+    },
+    "FileProcessStatusType": {
+      "type": "string",
+      "enum": [
+        "SUBMITTED",
+        "PROCESSING",
+        "COMPLETED_SUCCESSFULLY",
+        "COMPLETED_WITH_ERRORS"
+      ]
+    },
+    "VisitConfirmationType": {
+      "type": "string",
+      "enum": [
+        "NO_VISIT_OUTSIDE_PRACTICE",
+        "YES",
+        "COMPLETE"
+      ]
+    },
+    "MedicationsDocumentedType": {
+      "type": "string",
+      "enum": [
+        "NO",
+        "YES",
+        "NO_DENOMINATOR_EXCEPTION"
+      ]
+    },
+    "MedicalNotQualifiedReasonType": {
+      "type": "string",
+      "enum": [
+        "IN_HOSPICE",
+        "MOVED_OUT_OF_COUNTRY",
+        "DECEASED",
+        "HMO_ENROLLED"
+      ]
+    },
+    "ModuleStatusType": {
+      "type": "string",
+      "enum": [
+        "COMPLETE",
+        "SKIPPED",
+        "NOT_RANKED"
+      ]
+    },
+    "ClinicalFindingDataObject": {
+      "type": "object",
+      "properties": {
+        "attribute": {
+          "type": "string",
+          "example": "finding name 1"
+        },
+        "value": {
+          "type": "string",
+          "example": "finding value 1"
+        }
+      }
+    },
+    "ProviderDataObject": {
+      "type": "object",
+      "properties": {
+        "nationalProviderIdentifier": {
+          "$ref": "#/definitions/NPI"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "Jane"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "ein": {
+          "type": "string",
+          "example": "9900d9-ein",
+          "description": "An EIN stands for what"
+        },
+        "credentials": {
+          "type": "string",
+          "format": "password",
+          "example": "xxxxxxxx"
+        },
+        "state": {
+          "type": "string",
+          "example": "Virginia"
+        },
+        "zipCode": {
+          "type": "string",
+          "example": "20171"
+        },
+        "isOriginal": {
+          "type": "boolean",
+          "example": "true"
+        }
+      }
+    },
+    "ClinicDataObject": {
+      "type": "object",
+      "properties": {
+        "clinicId": {
+          "$ref": "#/definitions/ClinicIdType"
+        },
+        "name": {
+          "type": "string",
+          "example": "Westfields"
+        },
+        "address1": {
+          "type": "string",
+          "example": "2400 River Rd"
+        },
+        "address2": {
+          "type": "string",
+          "example": "STE 420"
+        },
+        "city": {
+          "type": "string",
+          "example": "Herndon"
+        },
+        "state": {
+          "type": "string",
+          "example": "Virginia"
+        },
+        "zipCode": {
+          "type": "string",
+          "example": "20171"
+        },
+        "isOriginal": {
+          "type": "boolean",
+          "example": "true"
+        }
+      }
+    },
+    "VisitDataObject": {
+      "type": "object",
+      "properties": {
+        "visitedOn": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "confirmation": {
+          "$ref": "#/definitions/VisitConfirmationType"
+        },
+        "medicationsDocumented": {
+          "$ref": "#/definitions/MedicationsDocumentedType"
+        },
+        "clinic": {
+          "$ref": "#/definitions/ClinicDataObject"
+        },
+        "providers": {
+          "type": "array",
+          "description": "A list of associated providers",
+          "items": {
+            "$ref": "#/definitions/ProviderDataObject"
+          }
+        }
+      }
+    },
+    "ModuleDataObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "example": "060eb4b1-1a93-467e-b3eb-0b8518ed4d49"
+        },
+        "name": {
+          "type": "string",
+          "example": "CARE-2"
+        },
+        "status": {
+          "$ref": "#/definitions/ModuleStatusType"
+        },
+        "rank": {
+          "type": "integer",
+          "format": "int32",
+          "example": 201
+        },
+        "confirmed": {
+          "type": "string",
+          "example": "confirmed moduled blah blah"
+        },
+        "helpDeskTicket": {
+          "$ref": "#/definitions/HelpDeskTicketType"
+        },
+        "comments": {
+          "type": "string",
+          "example": "comments module blah blah"
+        },
+        "submissions": {
+          "type": "array",
+          "description": "A list of modules",
+          "items": {
+            "$ref": "#/definitions/ClinicalFindingDataObject"
+          }
+        }
+      }
+    },
+    "ModuleCategoryDataObject": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "CARE-2"
+        },
+        "lowestRank1": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lowestRank2": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lowestRank3": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "$ref": "#/definitions/ModuleStatusType"
+        },
+        "modules": {
+          "type": "array",
+          "description": "A list of modules",
+          "items": {
+            "$ref": "#/definitions/ModuleDataObject"
+          }
+        }
+      }
+    },
+    "BeneficiaryDataObject": {
+      "type": "object",
+      "properties": {
+        "medicareId": {
+          "$ref": "#/definitions/MediCareIdType"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "Bill"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Banks"
+        },
+        "gender": {
+          "$ref": "#/definitions/GenderType"
+        },
+        "dateOfBirth": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "medicalRecordNumber": {
+          "type": "string",
+          "example": "MR-99-889"
+        },
+        "otherIdentifier": {
+          "type": "string",
+          "example": "XJ-22"
+        },
+        "comments": {
+          "type": "string",
+          "example": "blah blah comment"
+        },
+        "medicalRecordFound": {
+          "$ref": "#/definitions/MedicalRecordFoundType"
+        },
+        "medicalRecordNotQualifiedReason": {
+          "$ref": "#/definitions/MedicalNotQualifiedReasonType"
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "lowestRank1": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lowestRank2": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lowestRank3": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "demographicsStatus": {
+          "$ref": "#/definitions/ModuleStatusType"
+        },
+        "totalProgressCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "progressCount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "moduleCategories": {
+          "type": "array",
+          "description": "A list of module categorys",
+          "items": {
+            "$ref": "#/definitions/ModuleCategoryDataObject"
+          }
+        },
+        "visits": {
+          "type": "array",
+          "description": "A list of visits",
+          "items": {
+            "$ref": "#/definitions/VisitDataObject"
+          }
+        },
+        "providers": {
+          "type": "array",
+          "description": "A list of associated providers",
+          "items": {
+            "$ref": "#/definitions/ProviderDataObject"
+          }
+        }
+      }
+    },
+    "ScoreDataObject": {
+      "type": "object",
+      "properties": {
+        "measureId": {
+          "$ref": "#/definitions/MeasureIdType"
+        },
+        "numerator": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "denominator": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ratio": {
+          "type": "number",
+          "format": "float"
+        },
+        "benchmark": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "score": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "InquiryDataObject": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "reason": {
+          "type": "string",
+          "example": "I want to skip the beneficary 89989009"
+        }
+      }
+    },
+    "FileProcessMessageDataObject": {
+      "type": "object",
+      "properties": {
+        "occured": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "message": {
+          "type": "string",
+          "example": "This file was processed because the beneficiary is no longer alive"
+        },
+        "isError": {
+          "type": "boolean"
+        }
+      }
+    },
+    "FileProcessDataObject": {
+      "type": "object",
+      "properties": {
+        "created": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "fileS3": {
+          "type": "string",
+          "example": "s3://abxd-bucket/ehr_00334.pdf"
+        },
+        "queueJobId": {
+          "type": "string",
+          "example": "JOB-9909008090-77"
+        },
+        "status": {
+          "$ref": "#/definitions/FileProcessStatusType"
+        },
+        "messages": {
+          "type": "array",
+          "description": "A list of associated file process message objects",
+          "items": {
+            "$ref": "#/definitions/FileProcessMessageDataObject"
+          }
+        }
+      }
+    },
+    "RegistrationDataObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
+        "created": {
+          "$ref": "#/definitions/DateTime"
+        },
+        "score": {
+          "type": "number",
+          "format": "float"
+        },
+        "groupReportingEnabled": {
+          "type": "boolean"
+        },
+        "cahpsRegistered": {
+          "type": "boolean"
+        },
+        "scores": {
+          "type": "array",
+          "description": "A list of associated score objects",
+          "items": {
+            "$ref": "#/definitions/ScoreDataObject"
+          }
+        },
+        "inquiries": {
+          "type": "array",
+          "description": "A list of associated inquiry objects",
+          "items": {
+            "$ref": "#/definitions/InquiryDataObject"
+          }
+        },
+        "providers": {
+          "type": "array",
+          "description": "A list of associated provider objects",
+          "items": {
+            "$ref": "#/definitions/ProviderDataObject"
+          }
+        },
+        "fileProcesses": {
+          "type": "array",
+          "description": "A list of associated file process objects",
+          "items": {
+            "$ref": "#/definitions/FileProcessDataObject"
+          }
+        },
+        "clinics": {
+          "type": "array",
+          "description": "A list of associated clinic objects",
+          "items": {
+            "$ref": "#/definitions/ClinicDataObject"
+          }
+        },
+        "beneficiaries": {
+          "type": "array",
+          "description": "A list of associated beneficiary objects",
+          "items": {
+            "$ref": "#/definitions/BeneficiaryDataObject"
+          }
+        }
+      }
+    },
+    "GroupDataObject": {
+      "type": "object",
+      "properties": {
+        "taxpayerIdentificationNumber": {
+          "$ref": "#/definitions/TIN"
+        },
+        "name": {
+          "type": "string",
+          "example": "Novant Health"
+        },
+        "registrations": {
+          "type": "array",
+          "description": "A list of associated registraion objects",
+          "items": {
+            "$ref": "#/definitions/RegistrationDataObject"
+          }
+        }
+      }
+    },
+    "UserDataObject": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string",
+          "description": "A username that can be used to identify the user."
+        },
+        "password": {
+          "type": "string",
+          "format": "password",
+          "description": "A password for the user."
+        },
+        "nationalProviderIdentifier": {
+          "$ref": "#/definitions/NPI"
+        },
+        "groups": {
+          "type": "array",
+          "description": "A list of associated group objects",
+          "items": {
+            "$ref": "#/definitions/GroupDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedBeneficiaryDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BeneficiaryDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedGroupDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GroupDataObject"
+          }
+        }
+      }
+    },
+    "InvalidInputError": {
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "BadRequestError"
+            },
+            "message": {
+              "type": "string",
+              "example": "Cannot find the field to for projection: middleName"
+            }
+          }
+        }
+      }
+    },
+    "InputParamValidationError": {
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "ValidationError"
+            },
+            "message": {
+              "type": "string",
+              "example": "Invalid value: 12345 for filter parameter: taxpayerIdentificationNumber"
+            }
+          }
+        }
+      }
+    },
+    "InputDataValidationErrorDetail": {
+      "properties": {
+        "path": {
+          "type": "string",
+          "example": "beneficiaries[0].medicalRecordNumber"
+        },
+        "value": {
+          "type": "string",
+          "example": "9900-99"
+        },
+        "type": {
+          "type": "string",
+          "example": "InvalidValue"
+        },
+        "message": {
+          "type": "string",
+          "example": "invalid Medical Record Number pattern"
+        }
+      }
+    },
+    "InputDataValidationError": {
+      "properties": {
+        "error": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "ValidationError"
+            },
+            "message": {
+              "type": "string",
+              "example": "Found errors while validating input data"
+            },
+            "details": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InputDataValidationErrorDetail"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/login": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "description": "Login to the application",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "username",
+            "description": "Username to use for login.",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "description": "User's password.",
+            "in": "formData",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "login"
+          }
+        }
+      }
+    },
+    "/group": {
+      "get": {
+        "operationId": "listGroup",
+        "summary": "List all the group objects",
+        "description": "Returns a list containing all matching groups",
+        "tags": [
+          "Group"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the groups whose name match the name provided"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter the groups that match the partial text"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Group objects",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedGroupDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createGroup",
+        "summary": "Creates a group",
+        "description": "Creates a group with the provided values",
+        "tags": [
+          "Group"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GroupDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created Group object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/GroupDataObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error validating submission object",
+            "schema": {
+              "$ref": "#/definitions/InputDataValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/group/{id}": {
+      "get": {
+        "operationId": "getGroup",
+        "summary": "Fetches a single group",
+        "description": "Will fetch the group identified by the id.",
+        "tags": [
+          "Group"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The tax identification number of the group to retrieve"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the groups whose name match the name provided"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter the groups that match the partial text"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"name,clinics.clinicId,providers\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,taxIdentificationNumber"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Group object corresponding to the given ID",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/GroupDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating group data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeGroup",
+        "summary": "Removes a single group",
+        "description": "Removes a single group",
+        "tags": [
+          "Group"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The tax identification number of the group to modify"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Group not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating group data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceGroup",
+        "summary": "Updates a single group",
+        "description": "Updates a single group with PUT (full-replacement) semantics",
+        "tags": [
+          "Group"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The tax identification number of the group to modify"
+          },
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GroupDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated group object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/GroupDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating group data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateGroup",
+        "summary": "Updates a single group",
+        "description": "Updates a single group with PATCH (delta) semantics",
+        "tags": [
+          "Group"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The tax identification number of the group to modify"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"name,clinics.clinicId,providers\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "group",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GroupDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated group object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/GroupDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Group not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating group data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/beneficiary": {
+      "get": {
+        "operationId": "listBeneficiary",
+        "summary": "List beneficiary",
+        "description": "Returns a list containing all matching beneficiary",
+        "tags": [
+          "Beneficiary"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "taxpayerIdentificationNumber",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "locked",
+            "in": "query",
+            "required": false,
+            "type": "boolean",
+            "description": "Filter the beneficiary matching locked state"
+          },
+          {
+            "name": "dateOfBirth",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the beneficiary matching the birth date"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated."
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Beneficiary",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedBeneficiaryDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    }
+  }
+}
