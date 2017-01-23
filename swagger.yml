@@ -88,6 +88,8 @@ definitions:
   ProviderDataObject:
     type: object
     properties:
+      id:
+        $ref: '#/definitions/Id'
       nationalProviderIdentifier:
         $ref: '#/definitions/NPI'
       firstName:
@@ -96,10 +98,10 @@ definitions:
       lastName:
         type: string
         example: 'Doe'
-      ein:
+      employerIdentificationNumber:
         type: string
         example: '9900d9-ein'
-        description: 'An EIN stands for what'
+        description: 'An employer identification number'
       credentials:
         type: string
         format: password
@@ -410,6 +412,24 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/GroupDataObject'
+  ReturnedProviderDataObjects:
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ProviderDataObject'
+  ReturnedRegistrationDataObjects:
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/RegistrationDataObject'
+  ReturnedClinicDataObjects:
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/ClinicDataObject'
 
   InvalidInputError:
     properties:
@@ -488,7 +508,524 @@ paths:
         '200':
           description: login
 
-  '/group':
+
+  '/providers':
+    get:
+      operationId: listProvider
+      summary: List all the provider objects
+      description: Returns a list containing all matching provider
+      tags:
+        - Provider
+      produces:
+        - application/json
+      parameters:
+        - name: firstName
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the name provided
+        - name: lastName
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the name provided
+        - name: nationalProviderIdentifier
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the NPI provided
+        - name: employerIdentificationNumber
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the EIN provided
+        - name: state
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the State provided
+        - name: zip
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the ZIP code provided
+        - name: q
+          in: query
+          type: string
+          required: false
+          description: Filter the providers that match the partial text
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example nationalProviderIdentifier,firstName,lastName
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -lastName,zipCode
+      responses:
+        '200':
+          description: A list of Provider objects
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ReturnedProviderDataObjects'
+        '400':
+          description: Invalid filter query
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating filter parameter value
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    post:
+      operationId: createProvider
+      summary: Creates a provider
+      description: Creates a provider with the provided values
+      tags:
+        - Provider
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: provider
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProviderDataObject'
+      responses:
+        '201':
+          description: The created Provider object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ProviderDataObject'
+        '422':
+          description: Error validating provider object
+          schema:
+            $ref: '#/definitions/InputDataValidationError'
+
+  '/providers/{id}':
+    get:
+      operationId: getProvider
+      summary: Fetches a single provider
+      description: Will fetch the provider identified by the id.
+      tags:
+        - Provider
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the provider to retrieve
+        - name: nationalProviderIdentifier
+          in: query
+          required: true
+          type: string
+          description: The national provider identification number of the provider to retrieve
+        - name: employerIdentificationNumber
+          in: query
+          required: true
+          type: string
+          description: The employer identification number of the provider to retrieve
+        - name: firstName
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the name provided
+        - name: lastName
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose name match the name provided
+        - name: state
+          in: query
+          required: true
+          type: string
+          description: The State of the provider to retrieve
+        - name: zipCode
+          in: query
+          required: true
+          type: string
+          description: The zipCode of the provider to retrieve
+        - name: q
+          in: query
+          type: string
+          required: false
+          description: Filter the provider that match the partial text
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example "firstName,lastName"
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -firstName,lastName
+      responses:
+        '200':
+          description: The Provider object corresponding to the given National Provider Identification Number
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ProviderDataObject'
+        '404':
+          description: Provider not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating provider data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    delete:
+      operationId: removeProvider
+      summary: Removes a single provider
+      description:  Removes a single provider
+      tags:
+        - Provider
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the provider to delete
+      responses:
+        '204':
+          description: Success (No Content)
+        '404':
+          description: Provider not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating provider data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    put:
+      operationId: replaceProvider
+      summary: Updates a single provider
+      description:  Updates a single provider with PUT (full-replacement) semantics
+      tags:
+        - Provider
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the provider to replace
+        - name: provider
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProviderDataObject'
+      responses:
+        '200':
+          description: The updated provider object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ProviderDataObject'
+        '404':
+          description: Provider not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating provider data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    patch:
+      operationId: updateProvider
+      summary: Updates a single provider
+      description:  Updates a single provider with PATCH (delta) semantics
+      tags:
+        - Provider
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the provider to be updated
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be updated. Example "firstName,lastName". If not provided, then only properites with non-null values in input will be updated.
+        - name: provider
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ProviderDataObject'
+      responses:
+        '200':
+          description: The updated provider object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ProviderDataObject'
+        '404':
+          description: Provider not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating provider data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+
+
+
+  '/clinics':
+    get:
+      operationId: listClinic
+      summary: List all the clinic objects
+      description: Returns a list containing all matching clinic
+      tags:
+        - Clinic
+      produces:
+        - application/json
+      parameters:
+        - name: clinicId
+          in: query
+          required: false
+          type: string
+          description: Filter the clinics whose clinic identifier match the name provided
+        - name: name
+          in: query
+          required: false
+          type: string
+          description: Filter the clinics whose name match the name provided
+        - name: state
+          in: query
+          required: false
+          type: string
+          description: Filter the clinics whose name match the State provided
+        - name: zip
+          in: query
+          required: false
+          type: string
+          description: Filter the clinics whose name match the ZIP code provided
+        - name: q
+          in: query
+          type: string
+          required: false
+          description: Filter the clinics that match the partial text
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example clinicId,name,zipCode
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,zipCode
+      responses:
+        '200':
+          description: A list of Clinic objects
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ReturnedClinicDataObjects'
+        '400':
+          description: Invalid filter query
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating filter parameter value
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    post:
+      operationId: createClinic
+      summary: Creates a clinic
+      description: Creates a clinic with the provided values
+      tags:
+        - Clinic
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: clinic
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ClinicDataObject'
+      responses:
+        '201':
+          description: The created Clinic object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ClinicDataObject'
+        '422':
+          description: Error validating clinic object
+          schema:
+            $ref: '#/definitions/InputDataValidationError'
+
+  '/clinics/{id}':
+    get:
+      operationId: getClinic
+      summary: Fetches a single clinic
+      description: Will fetch the clinic identified by the id.
+      tags:
+        - Clinic
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the clinic to retrieve
+        - name: clinicId
+          in: query
+          required: true
+          type: string
+          description: The clinic identification number of the clinic to retrieve
+        - name: name
+          in: query
+          required: true
+          type: string
+          description: The name of the clinic to retrieve
+        - name: state
+          in: query
+          required: true
+          type: string
+          description: The State of the clinic to retrieve
+        - name: zipCode
+          in: query
+          required: true
+          type: string
+          description: The zipCode of the clinic to retrieve
+        - name: q
+          in: query
+          type: string
+          required: false
+          description: Filter the clinic that match the partial text
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example "name,clinicId"
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,clinicId
+      responses:
+        '200':
+          description: The Clinic object corresponding to the given ID
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ClinicDataObject'
+        '404':
+          description: Clinic not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating clinic data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    delete:
+      operationId: removeClinic
+      summary: Removes a single clinic
+      description:  Removes a single clinic
+      tags:
+        - Clinic
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the clinic to delete
+      responses:
+        '204':
+          description: Success (No Content)
+        '404':
+          description: Clinic not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating clinic data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    put:
+      operationId: replaceClinic
+      summary: Updates a single clinic
+      description:  Updates a single clinic with PUT (full-replacement) semantics
+      tags:
+        - Clinic
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the clinic to replace
+        - name: clinic
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ClinicDataObject'
+      responses:
+        '200':
+          description: The updated clinic object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ClinicDataObject'
+        '404':
+          description: Clinic not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating clinic data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    patch:
+      operationId: updateClinic
+      summary: Updates a single clinic
+      description:  Updates a single clinic with PATCH (delta) semantics
+      tags:
+        - Clinic
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the clinic to be updated
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be updated. Example "name,address1". If not provided, then only properites with non-null values in input will be updated.
+        - name: clinic
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ClinicDataObject'
+      responses:
+        '200':
+          description: The updated clinic object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ClinicDataObject'
+        '404':
+          description: Clinic not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating clinic data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+
+  '/groups':
     get:
       operationId: listGroup
       summary: List all the group objects
@@ -551,11 +1088,11 @@ paths:
               data:
                 $ref: '#/definitions/GroupDataObject'
         '422':
-          description: Error validating submission object
+          description: Error validating group object
           schema:
             $ref: '#/definitions/InputDataValidationError'
 
-  '/group/{id}':
+  '/groups/{id}':
     get:
       operationId: getGroup
       summary: Fetches a single group
@@ -569,7 +1106,7 @@ paths:
           in: path
           required: true
           type: string
-          description: The tax identification number of the group to retrieve
+          description: The ID of the group to retrieve
         - name: name
           in: query
           required: false
@@ -616,7 +1153,7 @@ paths:
           in: path
           required: true
           type: string
-          description: The tax identification number of the group to modify
+          description: The ID of the group to modify
       responses:
         '204':
           description: Success (No Content)
@@ -641,7 +1178,7 @@ paths:
           in: path
           required: true
           type: string
-          description: The tax identification number of the group to modify
+          description: The ID of the group to modify
         - name: group
           in: body
           required: true
@@ -675,7 +1212,7 @@ paths:
           in: path
           required: true
           type: string
-          description: The tax identification number of the group to modify
+          description: The ID of the group to modify
         - name: filters
           in: query
           type: string
