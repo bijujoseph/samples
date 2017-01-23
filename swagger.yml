@@ -11,14 +11,18 @@ definitions:
   Id:
     type: string
     example: 070ab431-1b44-868e-a432-076518ea4a22
+  GroupIdType:
+    type: string
+    example: 070ab431-1b23-868e-bae2-076518ea4a33
   TIN:
     type: string
     example: '123456789'
   NPI:
     type: string
     example: '9876543210'
-  DateTime:
+  Date:
     type: string
+    format: date
     example: '2016-11-16T06:43:32.000Z'
   HelpDeskTicketType:
     type: string
@@ -85,11 +89,71 @@ definitions:
       value:
         type: string
         example: 'finding value 1'
+  ToCreateProviderDataObject:
+    type: object
+    properties:
+      groupId:
+        $ref: '#/definitions/GroupIdType'
+      nationalProviderIdentifier:
+        $ref: '#/definitions/NPI'
+      firstName:
+        type: string
+        example: 'Jane'
+      lastName:
+        type: string
+        example: 'Doe'
+      employerIdentificationNumber:
+        type: string
+        example: '9900d9-ein'
+        description: 'An employer identification number'
+      credentials:
+        type: string
+        format: password
+        example: 'xxxxxxxx'
+      state:
+        type: string
+        example: 'Virginia'
+      zipCode:
+        type: string
+        example: '20171'
+      isOriginal:
+        type: boolean
+        example: 'true'
+  ToCreateClinicDataObject:
+    type: object
+    properties:
+      groupId:
+        $ref: '#/definitions/GroupIdType'
+      clinicId:
+        $ref: '#/definitions/ClinicIdType'
+      name:
+        type: string
+        example: 'Westfields'
+      address1:
+        type: string
+        example: '2400 River Rd'
+      address2:
+        type: string
+        example: 'STE 420'
+      city:
+        type: string
+        example: 'Herndon'
+      state:
+        type: string
+        example: 'Virginia'
+      zipCode:
+        type: string
+        example: '20171'
+      isOriginal:
+        type: boolean
+        example: 'true'
   ProviderDataObject:
     type: object
     properties:
       id:
         $ref: '#/definitions/Id'
+      groupId:
+        $ref: '#/definitions/GroupIdType'
       nationalProviderIdentifier:
         $ref: '#/definitions/NPI'
       firstName:
@@ -118,6 +182,10 @@ definitions:
   ClinicDataObject:
     type: object
     properties:
+      id:
+        $ref: '#/definitions/Id'
+      groupId:
+        $ref: '#/definitions/GroupIdType'
       clinicId:
         $ref: '#/definitions/ClinicIdType'
       name:
@@ -145,7 +213,7 @@ definitions:
     type: object
     properties:
       visitedOn:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       confirmation:
         $ref: '#/definitions/VisitConfirmationType'
       medicationsDocumented:
@@ -221,7 +289,7 @@ definitions:
       gender:
         $ref: '#/definitions/GenderType'
       dateOfBirth:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       medicalRecordNumber:
         type: string
         example: 'MR-99-889'
@@ -293,7 +361,7 @@ definitions:
     type: object
     properties:
       created:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       reason:
         type: string
         example: 'I want to skip the beneficary 89989009'
@@ -301,7 +369,7 @@ definitions:
     type: object
     properties:
       occured:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       message:
         type: string
         example: 'This file was processed because the beneficiary is no longer alive'
@@ -311,7 +379,7 @@ definitions:
     type: object
     properties:
       created:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       fileS3:
         type: string
         example: 's3://abxd-bucket/ehr_00334.pdf'
@@ -328,10 +396,12 @@ definitions:
   RegistrationDataObject:
     type: object
     properties:
+      groupId:
+        $ref: '#/definitions/GroupIdType'
       id:
         $ref: '#/definitions/Id'
       created:
-        $ref: '#/definitions/DateTime'
+        $ref: '#/definitions/Date'
       score:
         type: number
         format: float
@@ -369,7 +439,26 @@ definitions:
         description: A list of associated beneficiary objects
         items:
           $ref: '#/definitions/BeneficiaryDataObject'
+  ToCreateRegistrationDataObject:
+    type: object
+    properties:
+      groupId:
+        $ref: '#/definitions/GroupIdType'
+      groupReportingEnabled:
+        type: boolean
+      cahpsRegistered:
+        type: boolean
   GroupDataObject:
+    type: object
+    properties:
+      id:
+        $ref: '#/definitions/Id'
+      taxpayerIdentificationNumber:
+        $ref: '#/definitions/TIN'
+      name:
+        type: string
+        example: 'Novant Health'
+  OriginalGroupDataObject:
     type: object
     properties:
       taxpayerIdentificationNumber:
@@ -508,7 +597,6 @@ paths:
         '200':
           description: login
 
-
   '/providers':
     get:
       operationId: listProvider
@@ -533,22 +621,27 @@ paths:
           in: query
           required: false
           type: string
-          description: Filter the providers whose name match the NPI provided
+          description: Filter the providers whose NPI match the NPI provided
         - name: employerIdentificationNumber
           in: query
           required: false
           type: string
-          description: Filter the providers whose name match the EIN provided
+          description: Filter the providers whose EIN match the EIN provided
         - name: state
           in: query
           required: false
           type: string
-          description: Filter the providers whose name match the State provided
+          description: Filter the providers whose state match the State provided
         - name: zip
           in: query
           required: false
           type: string
-          description: Filter the providers whose name match the ZIP code provided
+          description: Filter the providers whose zip match the ZIP code provided
+        - name: groupId
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose group match the group identifier code provided
         - name: q
           in: query
           type: string
@@ -592,7 +685,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ProviderDataObject'
+            $ref: '#/definitions/ToCreateProviderDataObject'
       responses:
         '201':
           description: The created Provider object
@@ -620,41 +713,6 @@ paths:
           required: true
           type: string
           description: The ID of the provider to retrieve
-        - name: nationalProviderIdentifier
-          in: query
-          required: true
-          type: string
-          description: The national provider identification number of the provider to retrieve
-        - name: employerIdentificationNumber
-          in: query
-          required: true
-          type: string
-          description: The employer identification number of the provider to retrieve
-        - name: firstName
-          in: query
-          required: false
-          type: string
-          description: Filter the providers whose name match the name provided
-        - name: lastName
-          in: query
-          required: false
-          type: string
-          description: Filter the providers whose name match the name provided
-        - name: state
-          in: query
-          required: true
-          type: string
-          description: The State of the provider to retrieve
-        - name: zipCode
-          in: query
-          required: true
-          type: string
-          description: The zipCode of the provider to retrieve
-        - name: q
-          in: query
-          type: string
-          required: false
-          description: Filter the provider that match the partial text
         - name: filters
           in: query
           type: string
@@ -721,7 +779,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ProviderDataObject'
+            $ref: '#/definitions/ToCreateProviderDataObject'
       responses:
         '200':
           description: The updated provider object
@@ -759,7 +817,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ProviderDataObject'
+            $ref: '#/definitions/ToCreateProviderDataObject'
       responses:
         '200':
           description: The updated provider object
@@ -776,8 +834,6 @@ paths:
           schema:
             $ref: '#/definitions/InputParamValidationError'
 
-
-
   '/clinics':
     get:
       operationId: listClinic
@@ -788,6 +844,11 @@ paths:
       produces:
         - application/json
       parameters:
+        - name: groupId
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose group identifier match the group identifer provided
         - name: clinicId
           in: query
           required: false
@@ -851,7 +912,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ClinicDataObject'
+            $ref: '#/definitions/ToCreateClinicDataObject'
       responses:
         '201':
           description: The created Clinic object
@@ -879,31 +940,6 @@ paths:
           required: true
           type: string
           description: The ID of the clinic to retrieve
-        - name: clinicId
-          in: query
-          required: true
-          type: string
-          description: The clinic identification number of the clinic to retrieve
-        - name: name
-          in: query
-          required: true
-          type: string
-          description: The name of the clinic to retrieve
-        - name: state
-          in: query
-          required: true
-          type: string
-          description: The State of the clinic to retrieve
-        - name: zipCode
-          in: query
-          required: true
-          type: string
-          description: The zipCode of the clinic to retrieve
-        - name: q
-          in: query
-          type: string
-          required: false
-          description: Filter the clinic that match the partial text
         - name: filters
           in: query
           type: string
@@ -970,7 +1006,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ClinicDataObject'
+            $ref: '#/definitions/ToCreateClinicDataObject'
       responses:
         '200':
           description: The updated clinic object
@@ -1008,7 +1044,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ClinicDataObject'
+            $ref: '#/definitions/ToCreateClinicDataObject'
       responses:
         '200':
           description: The updated clinic object
@@ -1022,6 +1058,221 @@ paths:
             $ref: '#/definitions/InvalidInputError'
         '422':
           description: Error validating clinic data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+
+
+  '/registrations':
+    get:
+      operationId: listRegistration
+      summary: List all the registration objects
+      description: Returns a list containing all matching registration
+      tags:
+        - Registration
+      produces:
+        - application/json
+      parameters:
+        - name: groupId
+          in: query
+          required: false
+          type: string
+          description: Filter the providers whose group identifier match the group identifer provided
+        - name: createdFrom
+          in: query
+          required: false
+          type: string
+          format: date
+          description: Filter the registrations that are created after the date provided. Example '2016-10-25'
+        - name: createdTill
+          in: query
+          required: false
+          type: string
+          format: date
+          description: Filter the registrations that are created before the date provided. Example '2016-11-16'
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example created
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -created,score
+      responses:
+        '200':
+          description: A list of Registration objects
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/ReturnedRegistrationDataObjects'
+        '400':
+          description: Invalid filter query
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating filter parameter value
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    post:
+      operationId: createRegistration
+      summary: Creates a registration
+      description: Creates a registration with the provided values
+      tags:
+        - Registration
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: registration
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ToCreateRegistrationDataObject'
+      responses:
+        '201':
+          description: The created Registration object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/RegistrationDataObject'
+        '422':
+          description: Error validating registration object
+          schema:
+            $ref: '#/definitions/InputDataValidationError'
+
+  '/registrations/{id}':
+    get:
+      operationId: getRegistration
+      summary: Fetches a single registration
+      description: Will fetch the registration identified by the id.
+      tags:
+        - Registration
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the registration to retrieve
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example "created,score"
+        - name: sort
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -score
+      responses:
+        '200':
+          description: The Registration object corresponding to the given ID
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/RegistrationDataObject'
+        '404':
+          description: Registration not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating registration data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    delete:
+      operationId: removeRegistration
+      summary: Removes a single registration
+      description:  Removes a single registration
+      tags:
+        - Registration
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the registration to delete
+      responses:
+        '204':
+          description: Success (No Content)
+        '404':
+          description: Registration not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating registration data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    put:
+      operationId: replaceRegistration
+      summary: Updates a single registration
+      description:  Updates a single registration with PUT (full-replacement) semantics
+      tags:
+        - Registration
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the registration to replace
+        - name: registration
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ToCreateRegistrationDataObject'
+      responses:
+        '200':
+          description: The updated registration object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/RegistrationDataObject'
+        '404':
+          description: Registration not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating registration data.
+          schema:
+            $ref: '#/definitions/InputParamValidationError'
+    patch:
+      operationId: updateRegistration
+      summary: Updates a single registration
+      description:  Updates a single registration with PATCH (delta) semantics
+      tags:
+        - Registration
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The ID of the registration to be updated
+        - name: filters
+          in: query
+          type: string
+          description: A comma seperated list of property names. If provided only those attributes will be updated. Example "score". If not provided, then only properites with non-null values in input will be updated.
+        - name: registration
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ToCreateRegistrationDataObject'
+      responses:
+        '200':
+          description: The updated registration object
+          schema:
+            properties:
+              data:
+                $ref: '#/definitions/RegistrationDataObject'
+        '404':
+          description: Registration not found
+          schema:
+            $ref: '#/definitions/InvalidInputError'
+        '422':
+          description: Error validating registration data.
           schema:
             $ref: '#/definitions/InputParamValidationError'
 
@@ -1107,20 +1358,10 @@ paths:
           required: true
           type: string
           description: The ID of the group to retrieve
-        - name: name
-          in: query
-          required: false
-          type: string
-          description: Filter the groups whose name match the name provided
-        - name: q
-          in: query
-          type: string
-          required: false
-          description: Filter the groups that match the partial text
         - name: filters
           in: query
           type: string
-          description: A comma seperated list of property names. If provided only those attributes will be populated. Example "name,clinics.clinicId,providers"
+          description: A comma seperated list of property names. If provided only those attributes will be populated. Example "name"
         - name: sort
           in: query
           type: string
@@ -1216,7 +1457,7 @@ paths:
         - name: filters
           in: query
           type: string
-          description: A comma seperated list of property names. If provided only those attributes will be updated. Example "name,clinics.clinicId,providers". If not provided, then only properites with non-null values in input will be updated.
+          description: A comma seperated list of property names. If provided only those attributes will be updated. Example "name". If not provided, then only properites with non-null values in input will be updated.
         - name: group
           in: body
           required: true
