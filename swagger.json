@@ -17,6 +17,12 @@
     },
     "GroupIdType": {
       "type": "string",
+      "description": "A group identifier",
+      "example": "070ab431-1b23-868e-bae2-076518ea4a33"
+    },
+    "RegistrationIdType": {
+      "type": "string",
+      "description": "A registration identifier",
       "example": "070ab431-1b23-868e-bae2-076518ea4a33"
     },
     "TIN": {
@@ -494,9 +500,33 @@
         }
       }
     },
+    "ToCreateInquiryDataObject": {
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
+        "registrationId": {
+          "$ref": "#/definitions/RegistrationIdType"
+        },
+        "reason": {
+          "type": "string",
+          "example": "I want to skip the beneficary 89989009"
+        }
+      }
+    },
     "InquiryDataObject": {
       "type": "object",
       "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
+        "registrationId": {
+          "$ref": "#/definitions/RegistrationIdType"
+        },
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
         "created": {
           "$ref": "#/definitions/Date"
         },
@@ -550,12 +580,6 @@
     "RegistrationDataObject": {
       "type": "object",
       "properties": {
-        "groupId": {
-          "$ref": "#/definitions/GroupIdType"
-        },
-        "id": {
-          "$ref": "#/definitions/Id"
-        },
         "created": {
           "$ref": "#/definitions/Date"
         },
@@ -731,6 +755,16 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/ClinicDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedInquiryDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/InquiryDataObject"
           }
         }
       }
@@ -1854,6 +1888,327 @@
           },
           "422": {
             "description": "Error validating registration data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/inquiries": {
+      "get": {
+        "operationId": "listInquiry",
+        "summary": "List all the Inquiry objects",
+        "description": "Returns a list containing all matching Inquiry",
+        "tags": [
+          "Inquiry"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "registrationId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the inquiries whose registration identifier match the one provided"
+          },
+          {
+            "name": "createdFrom",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the inquiries that are created after the date provided. Example '2016-10-25'"
+          },
+          {
+            "name": "createdTill",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the inquiries that are created before the date provided. Example '2016-11-16'"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example reason"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -created"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Inquiry objects",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedInquiryDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createInquiry",
+        "summary": "Creates a Inquiry",
+        "description": "Creates an Inquiry with the provided values",
+        "tags": [
+          "Inquiry"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "Inquiry",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateInquiryDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created Inquiry object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/InquiryDataObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error validating Inquiry object",
+            "schema": {
+              "$ref": "#/definitions/InputDataValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/inquiries/{id}": {
+      "get": {
+        "operationId": "getInquiry",
+        "summary": "Fetches a single Inquiry",
+        "description": "Will fetch the Inquiry identified by the id.",
+        "tags": [
+          "Inquiry"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the Inquiry to retrieve"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"firstName,lastName\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -firstName,lastName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Inquiry object corresponding to the given National Inquiry Identification Number",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/InquiryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inquiry not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Inquiry data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeInquiry",
+        "summary": "Removes a single Inquiry",
+        "description": "Removes a single Inquiry",
+        "tags": [
+          "Inquiry"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the Inquiry to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Inquiry not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Inquiry data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceInquiry",
+        "summary": "Updates a single Inquiry",
+        "description": "Updates a single Inquiry with PUT (full-replacement) semantics",
+        "tags": [
+          "Inquiry"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the Inquiry to replace"
+          },
+          {
+            "name": "Inquiry",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateInquiryDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated Inquiry object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/InquiryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inquiry not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Inquiry data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateInquiry",
+        "summary": "Updates a single Inquiry",
+        "description": "Updates a single Inquiry with PATCH (delta) semantics",
+        "tags": [
+          "Inquiry"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the Inquiry to be updated"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"firstName,lastName\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "Inquiry",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateInquiryDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated Inquiry object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/InquiryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Inquiry not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Inquiry data.",
             "schema": {
               "$ref": "#/definitions/InputParamValidationError"
             }
