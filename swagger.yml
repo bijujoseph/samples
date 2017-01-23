@@ -670,7 +670,7 @@ paths:
           type: string
           required: false
           description: Filter the providers that match the partial text
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example nationalProviderIdentifier,firstName,lastName
@@ -736,7 +736,7 @@ paths:
           required: true
           type: string
           description: The ID of the provider to retrieve
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example "firstName,lastName"
@@ -832,7 +832,7 @@ paths:
           required: true
           type: string
           description: The ID of the provider to be updated
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be updated. Example "firstName,lastName". If not provided, then only properites with non-null values in input will be updated.
@@ -897,7 +897,7 @@ paths:
           type: string
           required: false
           description: Filter the clinics that match the partial text
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example clinicId,name,zipCode
@@ -963,7 +963,7 @@ paths:
           required: true
           type: string
           description: The ID of the clinic to retrieve
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example "name,clinicId"
@@ -1059,7 +1059,7 @@ paths:
           required: true
           type: string
           description: The ID of the clinic to be updated
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be updated. Example "name,address1". If not provided, then only properites with non-null values in input will be updated.
@@ -1112,7 +1112,7 @@ paths:
           type: string
           format: date
           description: Filter the registrations that are created before the date provided. Example '2016-11-16'
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example created
@@ -1178,7 +1178,7 @@ paths:
           required: true
           type: string
           description: The ID of the registration to retrieve
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example "created,score"
@@ -1274,7 +1274,7 @@ paths:
           required: true
           type: string
           description: The ID of the registration to be updated
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be updated. Example "score". If not provided, then only properites with non-null values in input will be updated.
@@ -1326,7 +1326,7 @@ paths:
           type: string
           format: date
           description: Filter the inquiries that are created before the date provided. Example '2016-11-16'
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example reason
@@ -1392,7 +1392,7 @@ paths:
           required: true
           type: string
           description: The ID of the Inquiry to retrieve
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example "firstName,lastName"
@@ -1488,7 +1488,7 @@ paths:
           required: true
           type: string
           description: The ID of the Inquiry to be updated
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be updated. Example "firstName,lastName". If not provided, then only properites with non-null values in input will be updated.
@@ -1533,7 +1533,7 @@ paths:
           type: string
           required: false
           description: Filter the groups that match the partial text
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated.
@@ -1595,7 +1595,7 @@ paths:
           required: true
           type: string
           description: The ID of the group to retrieve
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated. Example "name"
@@ -1691,7 +1691,7 @@ paths:
           required: true
           type: string
           description: The ID of the group to modify
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be updated. Example "name". If not provided, then only properites with non-null values in input will be updated.
@@ -1741,7 +1741,7 @@ paths:
           type: string
           format: date
           description: Filter the beneficiary matching the birth date
-        - name: filters
+        - name: fields
           in: query
           type: string
           description: A comma seperated list of property names. If provided only those attributes will be populated.
