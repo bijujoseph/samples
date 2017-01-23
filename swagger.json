@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "QPP Beneficiary Reporting API",
+    "title": "ABCL XYZ Reporting API",
     "description": "An API for managing Group reporting"
   },
   "schemes": [
@@ -15,6 +15,10 @@
       "type": "string",
       "example": "070ab431-1b44-868e-a432-076518ea4a22"
     },
+    "GroupIdType": {
+      "type": "string",
+      "example": "070ab431-1b23-868e-bae2-076518ea4a33"
+    },
     "TIN": {
       "type": "string",
       "example": "123456789"
@@ -23,8 +27,9 @@
       "type": "string",
       "example": "9876543210"
     },
-    "DateTime": {
+    "Date": {
       "type": "string",
+      "format": "date",
       "example": "2016-11-16T06:43:32.000Z"
     },
     "HelpDeskTicketType": {
@@ -114,9 +119,12 @@
         }
       }
     },
-    "ProviderDataObject": {
+    "ToCreateProviderDataObject": {
       "type": "object",
       "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
         "nationalProviderIdentifier": {
           "$ref": "#/definitions/NPI"
         },
@@ -128,10 +136,93 @@
           "type": "string",
           "example": "Doe"
         },
-        "ein": {
+        "employerIdentificationNumber": {
           "type": "string",
           "example": "9900d9-ein",
-          "description": "An EIN stands for what"
+          "description": "An employer identification number"
+        },
+        "credentials": {
+          "type": "string",
+          "format": "password",
+          "example": "xxxxxxxx"
+        },
+        "state": {
+          "type": "string",
+          "example": "Virginia"
+        },
+        "zipCode": {
+          "type": "string",
+          "example": "20171"
+        },
+        "isOriginal": {
+          "type": "boolean",
+          "example": "true"
+        }
+      }
+    },
+    "ToCreateClinicDataObject": {
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
+        "clinicId": {
+          "$ref": "#/definitions/ClinicIdType"
+        },
+        "name": {
+          "type": "string",
+          "example": "Westfields"
+        },
+        "address1": {
+          "type": "string",
+          "example": "2400 River Rd"
+        },
+        "address2": {
+          "type": "string",
+          "example": "STE 420"
+        },
+        "city": {
+          "type": "string",
+          "example": "Herndon"
+        },
+        "state": {
+          "type": "string",
+          "example": "Virginia"
+        },
+        "zipCode": {
+          "type": "string",
+          "example": "20171"
+        },
+        "isOriginal": {
+          "type": "boolean",
+          "example": "true"
+        }
+      }
+    },
+    "ProviderDataObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
+        "nationalProviderIdentifier": {
+          "$ref": "#/definitions/NPI"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "Jane"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
+        },
+        "employerIdentificationNumber": {
+          "type": "string",
+          "example": "9900d9-ein",
+          "description": "An employer identification number"
         },
         "credentials": {
           "type": "string",
@@ -155,6 +246,12 @@
     "ClinicDataObject": {
       "type": "object",
       "properties": {
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
         "clinicId": {
           "$ref": "#/definitions/ClinicIdType"
         },
@@ -192,7 +289,7 @@
       "type": "object",
       "properties": {
         "visitedOn": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "confirmation": {
           "$ref": "#/definitions/VisitConfirmationType"
@@ -300,7 +397,7 @@
           "$ref": "#/definitions/GenderType"
         },
         "dateOfBirth": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "medicalRecordNumber": {
           "type": "string",
@@ -401,7 +498,7 @@
       "type": "object",
       "properties": {
         "created": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "reason": {
           "type": "string",
@@ -413,7 +510,7 @@
       "type": "object",
       "properties": {
         "occured": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "message": {
           "type": "string",
@@ -428,7 +525,7 @@
       "type": "object",
       "properties": {
         "created": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "fileS3": {
           "type": "string",
@@ -453,11 +550,14 @@
     "RegistrationDataObject": {
       "type": "object",
       "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
         "id": {
           "$ref": "#/definitions/Id"
         },
         "created": {
-          "$ref": "#/definitions/DateTime"
+          "$ref": "#/definitions/Date"
         },
         "score": {
           "type": "number",
@@ -513,7 +613,36 @@
         }
       }
     },
+    "ToCreateRegistrationDataObject": {
+      "type": "object",
+      "properties": {
+        "groupId": {
+          "$ref": "#/definitions/GroupIdType"
+        },
+        "groupReportingEnabled": {
+          "type": "boolean"
+        },
+        "cahpsRegistered": {
+          "type": "boolean"
+        }
+      }
+    },
     "GroupDataObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/Id"
+        },
+        "taxpayerIdentificationNumber": {
+          "$ref": "#/definitions/TIN"
+        },
+        "name": {
+          "type": "string",
+          "example": "Novant Health"
+        }
+      }
+    },
+    "OriginalGroupDataObject": {
       "type": "object",
       "properties": {
         "taxpayerIdentificationNumber": {
@@ -572,6 +701,36 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/GroupDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedProviderDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ProviderDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedRegistrationDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RegistrationDataObject"
+          }
+        }
+      }
+    },
+    "ReturnedClinicDataObjects": {
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ClinicDataObject"
           }
         }
       }
@@ -687,7 +846,1022 @@
         }
       }
     },
-    "/group": {
+    "/providers": {
+      "get": {
+        "operationId": "listProvider",
+        "summary": "List all the provider objects",
+        "description": "Returns a list containing all matching provider",
+        "tags": [
+          "Provider"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose name match the name provided"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose name match the name provided"
+          },
+          {
+            "name": "nationalProviderIdentifier",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose NPI match the NPI provided"
+          },
+          {
+            "name": "employerIdentificationNumber",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose EIN match the EIN provided"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose state match the State provided"
+          },
+          {
+            "name": "zip",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose zip match the ZIP code provided"
+          },
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose group match the group identifier code provided"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter the providers that match the partial text"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example nationalProviderIdentifier,firstName,lastName"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -lastName,zipCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Provider objects",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedProviderDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProvider",
+        "summary": "Creates a provider",
+        "description": "Creates a provider with the provided values",
+        "tags": [
+          "Provider"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateProviderDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created Provider object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProviderDataObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error validating provider object",
+            "schema": {
+              "$ref": "#/definitions/InputDataValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/providers/{id}": {
+      "get": {
+        "operationId": "getProvider",
+        "summary": "Fetches a single provider",
+        "description": "Will fetch the provider identified by the id.",
+        "tags": [
+          "Provider"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the provider to retrieve"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"firstName,lastName\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -firstName,lastName"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Provider object corresponding to the given National Provider Identification Number",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProviderDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating provider data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeProvider",
+        "summary": "Removes a single provider",
+        "description": "Removes a single provider",
+        "tags": [
+          "Provider"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the provider to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Provider not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating provider data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceProvider",
+        "summary": "Updates a single provider",
+        "description": "Updates a single provider with PUT (full-replacement) semantics",
+        "tags": [
+          "Provider"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the provider to replace"
+          },
+          {
+            "name": "provider",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateProviderDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated provider object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProviderDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating provider data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateProvider",
+        "summary": "Updates a single provider",
+        "description": "Updates a single provider with PATCH (delta) semantics",
+        "tags": [
+          "Provider"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the provider to be updated"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"firstName,lastName\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "provider",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateProviderDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated provider object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ProviderDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Provider not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating provider data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/clinics": {
+      "get": {
+        "operationId": "listClinic",
+        "summary": "List all the clinic objects",
+        "description": "Returns a list containing all matching clinic",
+        "tags": [
+          "Clinic"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose group identifier match the group identifer provided"
+          },
+          {
+            "name": "clinicId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the clinics whose clinic identifier match the name provided"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the clinics whose name match the name provided"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the clinics whose name match the State provided"
+          },
+          {
+            "name": "zip",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the clinics whose name match the ZIP code provided"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter the clinics that match the partial text"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example clinicId,name,zipCode"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,zipCode"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Clinic objects",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedClinicDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createClinic",
+        "summary": "Creates a clinic",
+        "description": "Creates a clinic with the provided values",
+        "tags": [
+          "Clinic"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "clinic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateClinicDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created Clinic object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ClinicDataObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error validating clinic object",
+            "schema": {
+              "$ref": "#/definitions/InputDataValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/clinics/{id}": {
+      "get": {
+        "operationId": "getClinic",
+        "summary": "Fetches a single clinic",
+        "description": "Will fetch the clinic identified by the id.",
+        "tags": [
+          "Clinic"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the clinic to retrieve"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"name,clinicId\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,clinicId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Clinic object corresponding to the given ID",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ClinicDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clinic not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating clinic data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeClinic",
+        "summary": "Removes a single clinic",
+        "description": "Removes a single clinic",
+        "tags": [
+          "Clinic"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the clinic to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Clinic not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating clinic data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceClinic",
+        "summary": "Updates a single clinic",
+        "description": "Updates a single clinic with PUT (full-replacement) semantics",
+        "tags": [
+          "Clinic"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the clinic to replace"
+          },
+          {
+            "name": "clinic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateClinicDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated clinic object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ClinicDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clinic not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating clinic data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateClinic",
+        "summary": "Updates a single clinic",
+        "description": "Updates a single clinic with PATCH (delta) semantics",
+        "tags": [
+          "Clinic"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the clinic to be updated"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"name,address1\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "clinic",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateClinicDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated clinic object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ClinicDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clinic not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating clinic data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/registrations": {
+      "get": {
+        "operationId": "listRegistration",
+        "summary": "List all the registration objects",
+        "description": "Returns a list containing all matching registration",
+        "tags": [
+          "Registration"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose group identifier match the group identifer provided"
+          },
+          {
+            "name": "createdFrom",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the registrations that are created after the date provided. Example '2016-10-25'"
+          },
+          {
+            "name": "createdTill",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the registrations that are created before the date provided. Example '2016-11-16'"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example created"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -created,score"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of Registration objects",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/ReturnedRegistrationDataObjects"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter query",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createRegistration",
+        "summary": "Creates a registration",
+        "description": "Creates a registration with the provided values",
+        "tags": [
+          "Registration"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "registration",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The created Registration object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/RegistrationDataObject"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Error validating registration object",
+            "schema": {
+              "$ref": "#/definitions/InputDataValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/registrations/{id}": {
+      "get": {
+        "operationId": "getRegistration",
+        "summary": "Fetches a single registration",
+        "description": "Will fetch the registration identified by the id.",
+        "tags": [
+          "Registration"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the registration to retrieve"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"created,score\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -score"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Registration object corresponding to the given ID",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/RegistrationDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating registration data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeRegistration",
+        "summary": "Removes a single registration",
+        "description": "Removes a single registration",
+        "tags": [
+          "Registration"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the registration to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Registration not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating registration data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceRegistration",
+        "summary": "Updates a single registration",
+        "description": "Updates a single registration with PUT (full-replacement) semantics",
+        "tags": [
+          "Registration"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the registration to replace"
+          },
+          {
+            "name": "registration",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated registration object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/RegistrationDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating registration data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateRegistration",
+        "summary": "Updates a single registration",
+        "description": "Updates a single registration with PATCH (delta) semantics",
+        "tags": [
+          "Registration"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The ID of the registration to be updated"
+          },
+          {
+            "name": "filters",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"score\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "registration",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated registration object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/RegistrationDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Registration not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating registration data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/groups": {
       "get": {
         "operationId": "listGroup",
         "summary": "List all the group objects",
@@ -780,7 +1954,7 @@
             }
           },
           "422": {
-            "description": "Error validating submission object",
+            "description": "Error validating group object",
             "schema": {
               "$ref": "#/definitions/InputDataValidationError"
             }
@@ -788,7 +1962,7 @@
         }
       }
     },
-    "/group/{id}": {
+    "/groups/{id}": {
       "get": {
         "operationId": "getGroup",
         "summary": "Fetches a single group",
@@ -805,27 +1979,13 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The tax identification number of the group to retrieve"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "description": "Filter the groups whose name match the name provided"
-          },
-          {
-            "name": "q",
-            "in": "query",
-            "type": "string",
-            "required": false,
-            "description": "Filter the groups that match the partial text"
+            "description": "The ID of the group to retrieve"
           },
           {
             "name": "filters",
             "in": "query",
             "type": "string",
-            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"name,clinics.clinicId,providers\""
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"name\""
           },
           {
             "name": "sort",
@@ -875,7 +2035,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The tax identification number of the group to modify"
+            "description": "The ID of the group to modify"
           }
         ],
         "responses": {
@@ -912,7 +2072,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The tax identification number of the group to modify"
+            "description": "The ID of the group to modify"
           },
           {
             "name": "group",
@@ -964,13 +2124,13 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The tax identification number of the group to modify"
+            "description": "The ID of the group to modify"
           },
           {
             "name": "filters",
             "in": "query",
             "type": "string",
-            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"name,clinics.clinicId,providers\". If not provided, then only properites with non-null values in input will be updated."
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"name\". If not provided, then only properites with non-null values in input will be updated."
           },
           {
             "name": "group",
