@@ -25,10 +25,6 @@
       "description": "A registration identifier",
       "example": "070ab431-1b23-868e-bae2-076518ea4a33"
     },
-    "TIN": {
-      "type": "string",
-      "example": "123456789"
-    },
     "NPI": {
       "type": "string",
       "example": "9876543210"
@@ -651,14 +647,13 @@
         }
       }
     },
-    "GroupDataObject": {
+    "NewGroupDataObject": {
       "type": "object",
+      "description": "A group data object",
       "properties": {
-        "id": {
-          "$ref": "#/definitions/Id"
-        },
         "taxpayerIdentificationNumber": {
-          "$ref": "#/definitions/TIN"
+          "type": "string",
+          "example": "123456789"
         },
         "name": {
           "type": "string",
@@ -666,22 +661,17 @@
         }
       }
     },
-    "OriginalGroupDataObject": {
+    "GroupDataObject": {
       "type": "object",
       "properties": {
         "taxpayerIdentificationNumber": {
-          "$ref": "#/definitions/TIN"
+          "type": "string",
+          "example": "123456789",
+          "readOnly": true
         },
         "name": {
           "type": "string",
           "example": "Novant Health"
-        },
-        "registrations": {
-          "type": "array",
-          "description": "A list of associated registraion objects",
-          "items": {
-            "$ref": "#/definitions/RegistrationDataObject"
-          }
         }
       }
     },
@@ -2293,7 +2283,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GroupDataObject"
+              "$ref": "#/definitions/NewGroupDataObject"
             }
           }
         ],
@@ -2321,7 +2311,7 @@
       "get": {
         "operationId": "getGroup",
         "summary": "Fetches a single group",
-        "description": "Will fetch the group identified by the id.",
+        "description": "Will fetch the group identified by taxpayer identification number.",
         "tags": [
           "Group"
         ],
@@ -2334,7 +2324,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The ID of the group to retrieve"
+            "description": "The taxpayer identification number (TIN) of the group to retrieve"
           },
           {
             "name": "fields",
@@ -2351,7 +2341,7 @@
         ],
         "responses": {
           "200": {
-            "description": "The Group object corresponding to the given ID",
+            "description": "The Group object corresponding to the given taxpayer identification number (TIN)",
             "schema": {
               "properties": {
                 "data": {
@@ -2390,7 +2380,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The ID of the group to modify"
+            "description": "The taxpayer identification number (TIN) of the group to modify"
           }
         ],
         "responses": {
@@ -2427,7 +2417,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The ID of the group to modify"
+            "description": "The taxpayer identification number (TIN) of the group to modify"
           },
           {
             "name": "group",
@@ -2479,7 +2469,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The ID of the group to modify"
+            "description": "The taxpayer identification number (TIN) of the group to modify"
           },
           {
             "name": "fields",
