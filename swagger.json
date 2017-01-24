@@ -27,6 +27,7 @@
     },
     "NPI": {
       "type": "string",
+      "description": "The National Provider Identiication Number",
       "example": "9876543210"
     },
     "Date": {
@@ -121,15 +122,25 @@
         }
       }
     },
-    "ToCreateProviderDataObject": {
+    "ProviderRefObject": {
       "type": "object",
       "properties": {
-        "groupId": {
-          "$ref": "#/definitions/GroupIdType"
+        "firstName": {
+          "type": "string",
+          "example": "Jane"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Doe"
         },
         "nationalProviderIdentifier": {
           "$ref": "#/definitions/NPI"
-        },
+        }
+      }
+    },
+    "BaseProviderDataObject": {
+      "type": "object",
+      "properties": {
         "firstName": {
           "type": "string",
           "example": "Jane"
@@ -162,101 +173,63 @@
         }
       }
     },
-    "ToCreateClinicDataObject": {
-      "type": "object",
-      "properties": {
-        "groupId": {
-          "$ref": "#/definitions/GroupIdType"
+    "NewProviderDataObject": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseProviderDataObject"
         },
-        "clinicId": {
-          "$ref": "#/definitions/ClinicIdType"
-        },
-        "name": {
-          "type": "string",
-          "example": "Westfields"
-        },
-        "address1": {
-          "type": "string",
-          "example": "2400 River Rd"
-        },
-        "address2": {
-          "type": "string",
-          "example": "STE 420"
-        },
-        "city": {
-          "type": "string",
-          "example": "Herndon"
-        },
-        "state": {
-          "type": "string",
-          "example": "Virginia"
-        },
-        "zipCode": {
-          "type": "string",
-          "example": "20171"
-        },
-        "isOriginal": {
-          "type": "boolean",
-          "example": "true"
+        {
+          "properties": {
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "nationalProviderIdentifier": {
+              "$ref": "#/definitions/NPI"
+            }
+          }
         }
-      }
+      ]
     },
     "ProviderDataObject": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "$ref": "#/definitions/Id"
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseProviderDataObject"
         },
-        "groupId": {
-          "$ref": "#/definitions/GroupIdType"
-        },
-        "nationalProviderIdentifier": {
-          "$ref": "#/definitions/NPI"
-        },
-        "firstName": {
-          "type": "string",
-          "example": "Jane"
-        },
-        "lastName": {
-          "type": "string",
-          "example": "Doe"
-        },
-        "employerIdentificationNumber": {
-          "type": "string",
-          "example": "9900d9-ein",
-          "description": "An employer identification number"
-        },
-        "credentials": {
-          "type": "string",
-          "format": "password",
-          "example": "xxxxxxxx"
-        },
-        "state": {
-          "type": "string",
-          "example": "Virginia"
-        },
-        "zipCode": {
-          "type": "string",
-          "example": "20171"
-        },
-        "isOriginal": {
-          "type": "boolean",
-          "example": "true"
+        {
+          "properties": {
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "nationalProviderIdentifier": {
+              "$ref": "#/definitions/NPI"
+            }
+          }
         }
-      }
+      ]
     },
-    "ClinicDataObject": {
+    "ClinicRefObject": {
       "type": "object",
+      "description": "A clinic object",
       "properties": {
-        "id": {
-          "$ref": "#/definitions/Id"
-        },
-        "groupId": {
-          "$ref": "#/definitions/GroupIdType"
-        },
         "clinicId": {
           "$ref": "#/definitions/ClinicIdType"
         },
+        "name": {
+          "type": "string",
+          "example": "Westfields"
+        }
+      }
+    },
+    "BaseClinicDataObject": {
+      "type": "object",
+      "description": "A clinic object",
+      "properties": {
         "name": {
           "type": "string",
           "example": "Westfields"
@@ -286,6 +259,46 @@
           "example": "true"
         }
       }
+    },
+    "NewClinicDataObject": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseClinicDataObject"
+        },
+        {
+          "properties": {
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "clinicId": {
+              "$ref": "#/definitions/ClinicIdType"
+            }
+          }
+        }
+      ]
+    },
+    "ClinicDataObject": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseClinicDataObject"
+        },
+        {
+          "properties": {
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "clinicId": {
+              "$ref": "#/definitions/ClinicIdType"
+            }
+          }
+        }
+      ]
     },
     "VisitDataObject": {
       "type": "object",
@@ -300,13 +313,13 @@
           "$ref": "#/definitions/MedicationsDocumentedType"
         },
         "clinic": {
-          "$ref": "#/definitions/ClinicDataObject"
+          "$ref": "#/definitions/ClinicRefObject"
         },
         "providers": {
           "type": "array",
           "description": "A list of associated providers",
           "items": {
-            "$ref": "#/definitions/ProviderDataObject"
+            "$ref": "#/definitions/ProviderRefObject"
           }
         }
       }
@@ -381,12 +394,9 @@
         }
       }
     },
-    "BeneficiaryDataObject": {
+    "BaseBeneficiaryDataObject": {
       "type": "object",
       "properties": {
-        "medicareId": {
-          "$ref": "#/definitions/MediCareIdType"
-        },
         "firstName": {
           "type": "string",
           "example": "Bill"
@@ -422,29 +432,6 @@
         "locked": {
           "type": "boolean"
         },
-        "lowestRank1": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "lowestRank2": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "lowestRank3": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "demographicsStatus": {
-          "$ref": "#/definitions/ModuleStatusType"
-        },
-        "totalProgressCount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "progressCount": {
-          "type": "integer",
-          "format": "int32"
-        },
         "moduleCategories": {
           "type": "array",
           "description": "A list of module categorys",
@@ -463,10 +450,155 @@
           "type": "array",
           "description": "A list of associated providers",
           "items": {
-            "$ref": "#/definitions/ProviderDataObject"
+            "$ref": "#/definitions/ProviderRefObject"
           }
         }
       }
+    },
+    "BeneficiaryDataObject": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBeneficiaryDataObject"
+        },
+        {
+          "properties": {
+            "medicareId": {
+              "$ref": "#/definitions/MediCareIdType"
+            },
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "lowestRank1": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "lowestRank2": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "lowestRank3": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "demographicsStatus": {
+              "$ref": "#/definitions/ModuleStatusType"
+            },
+            "status": {
+              "$ref": "#/definitions/ModuleStatusType"
+            },
+            "totalProgressCount": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "progressCount": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      ]
+    },
+    "NewBeneficiaryDataObject": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseBeneficiaryDataObject"
+        },
+        {
+          "properties": {
+            "medicareId": {
+              "$ref": "#/definitions/MediCareIdType"
+            },
+            "groupId": {
+              "$ref": "#/definitions/GroupIdType"
+            },
+            "registrationId": {
+              "$ref": "#/definitions/RegistrationIdType"
+            },
+            "firstName": {
+              "type": "string",
+              "example": "Bill"
+            },
+            "lastName": {
+              "type": "string",
+              "example": "Banks"
+            },
+            "gender": {
+              "$ref": "#/definitions/GenderType"
+            },
+            "dateOfBirth": {
+              "$ref": "#/definitions/Date"
+            },
+            "medicalRecordNumber": {
+              "type": "string",
+              "example": "MR-99-889"
+            },
+            "otherIdentifier": {
+              "type": "string",
+              "example": "XJ-22"
+            },
+            "comments": {
+              "type": "string",
+              "example": "blah blah comment"
+            },
+            "medicalRecordFound": {
+              "$ref": "#/definitions/MedicalRecordFoundType"
+            },
+            "medicalRecordNotQualifiedReason": {
+              "$ref": "#/definitions/MedicalNotQualifiedReasonType"
+            },
+            "locked": {
+              "type": "boolean"
+            },
+            "lowestRank1": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "lowestRank2": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "lowestRank3": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "demographicsStatus": {
+              "$ref": "#/definitions/ModuleStatusType"
+            },
+            "totalProgressCount": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "progressCount": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "moduleCategories": {
+              "type": "array",
+              "description": "A list of module categorys",
+              "items": {
+                "$ref": "#/definitions/ModuleCategoryDataObject"
+              }
+            },
+            "visits": {
+              "type": "array",
+              "description": "A list of visits",
+              "items": {
+                "$ref": "#/definitions/VisitDataObject"
+              }
+            },
+            "providers": {
+              "type": "array",
+              "description": "A list of associated providers",
+              "items": {
+                "$ref": "#/definitions/ProviderRefObject"
+              }
+            }
+          }
+        }
+      ]
     },
     "ScoreDataObject": {
       "type": "object",
@@ -573,107 +705,88 @@
         }
       }
     },
-    "RegistrationDataObject": {
+    "NewRegistrationDataObject": {
       "type": "object",
-      "properties": {
-        "created": {
-          "$ref": "#/definitions/Date"
-        },
-        "score": {
-          "type": "number",
-          "format": "float"
-        },
-        "groupReportingEnabled": {
-          "type": "boolean"
-        },
-        "cahpsRegistered": {
-          "type": "boolean"
-        },
-        "scores": {
-          "type": "array",
-          "description": "A list of associated score objects",
-          "items": {
-            "$ref": "#/definitions/ScoreDataObject"
-          }
-        },
-        "inquiries": {
-          "type": "array",
-          "description": "A list of associated inquiry objects",
-          "items": {
-            "$ref": "#/definitions/InquiryDataObject"
-          }
-        },
-        "providers": {
-          "type": "array",
-          "description": "A list of associated provider objects",
-          "items": {
-            "$ref": "#/definitions/ProviderDataObject"
-          }
-        },
-        "fileProcesses": {
-          "type": "array",
-          "description": "A list of associated file process objects",
-          "items": {
-            "$ref": "#/definitions/FileProcessDataObject"
-          }
-        },
-        "clinics": {
-          "type": "array",
-          "description": "A list of associated clinic objects",
-          "items": {
-            "$ref": "#/definitions/ClinicDataObject"
-          }
-        },
-        "beneficiaries": {
-          "type": "array",
-          "description": "A list of associated beneficiary objects",
-          "items": {
-            "$ref": "#/definitions/BeneficiaryDataObject"
-          }
-        }
-      }
-    },
-    "ToCreateRegistrationDataObject": {
-      "type": "object",
+      "description": "A registration object",
       "properties": {
         "groupId": {
           "$ref": "#/definitions/GroupIdType"
         },
         "groupReportingEnabled": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates whether group reporting option is enabled"
         },
         "cahpsRegistered": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "Indicates whether registered also in Consumer Assessment of Healthcare Providers and Systems"
+        }
+      }
+    },
+    "RegistrationDataObject": {
+      "description": "A registration object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/NewRegistrationDataObject"
+        },
+        {
+          "properties": {
+            "id": {
+              "$ref": "#/definitions/Id"
+            },
+            "created": {
+              "$ref": "#/definitions/Date"
+            },
+            "score": {
+              "type": "number",
+              "format": "float",
+              "readOnly": true
+            }
+          }
+        }
+      ]
+    },
+    "BaseGroupDataObject": {
+      "type": "object",
+      "description": "A group data object, with only name",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Novant Health"
         }
       }
     },
     "NewGroupDataObject": {
-      "type": "object",
-      "description": "A group data object",
-      "properties": {
-        "taxpayerIdentificationNumber": {
-          "type": "string",
-          "example": "123456789"
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseGroupDataObject"
         },
-        "name": {
-          "type": "string",
-          "example": "Novant Health"
+        {
+          "properties": {
+            "taxpayerIdentificationNumber": {
+              "type": "string",
+              "description": "The TIN number of the group",
+              "example": "123456789"
+            }
+          }
         }
-      }
+      ]
     },
     "GroupDataObject": {
-      "type": "object",
-      "properties": {
-        "taxpayerIdentificationNumber": {
-          "type": "string",
-          "example": "123456789",
-          "readOnly": true
+      "allOf": [
+        {
+          "$ref": "#/definitions/BaseGroupDataObject"
         },
-        "name": {
-          "type": "string",
-          "example": "Novant Health"
+        {
+          "properties": {
+            "taxpayerIdentificationNumber": {
+              "type": "string",
+              "description": "The TIN number of the group",
+              "readOnly": true,
+              "example": "123456789"
+            }
+          }
         }
-      }
+      ]
     },
     "UserDataObject": {
       "type": "object",
@@ -883,6 +996,20 @@
         ],
         "parameters": [
           {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose group identifier match the group identifer provided"
+          },
+          {
+            "name": "registrationId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose registration identifier match the registration identifer provided"
+          },
+          {
             "name": "firstName",
             "in": "query",
             "required": false,
@@ -923,13 +1050,6 @@
             "required": false,
             "type": "string",
             "description": "Filter the providers whose zip match the ZIP code provided"
-          },
-          {
-            "name": "groupId",
-            "in": "query",
-            "required": false,
-            "type": "string",
-            "description": "Filter the providers whose group match the group identifier code provided"
           },
           {
             "name": "q",
@@ -995,7 +1115,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateProviderDataObject"
+              "$ref": "#/definitions/NewProviderDataObject"
             }
           }
         ],
@@ -1023,7 +1143,7 @@
       "get": {
         "operationId": "getProvider",
         "summary": "Fetches a single provider",
-        "description": "Will fetch the provider identified by the id.",
+        "description": "Will fetch the provider identified by the National Provider Identifier (NPI).",
         "tags": [
           "Provider"
         ],
@@ -1036,7 +1156,7 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "The ID of the provider to retrieve"
+            "description": "The National Provider Identification Number (NPI) of the provider to retrieve"
           },
           {
             "name": "fields",
@@ -1136,7 +1256,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateProviderDataObject"
+              "$ref": "#/definitions/BaseProviderDataObject"
             }
           }
         ],
@@ -1194,7 +1314,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateProviderDataObject"
+              "$ref": "#/definitions/BaseProviderDataObject"
             }
           }
         ],
@@ -1242,6 +1362,13 @@
             "required": false,
             "type": "string",
             "description": "Filter the providers whose group identifier match the group identifer provided"
+          },
+          {
+            "name": "registrationId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the providers whose registration identifier match the registration identifer provided"
           },
           {
             "name": "clinicId",
@@ -1335,7 +1462,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateClinicDataObject"
+              "$ref": "#/definitions/NewClinicDataObject"
             }
           }
         ],
@@ -1476,7 +1603,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateClinicDataObject"
+              "$ref": "#/definitions/BaseClinicDataObject"
             }
           }
         ],
@@ -1534,7 +1661,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateClinicDataObject"
+              "$ref": "#/definitions/BaseClinicDataObject"
             }
           }
         ],
@@ -1656,7 +1783,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+              "$ref": "#/definitions/NewRegistrationDataObject"
             }
           }
         ],
@@ -1797,7 +1924,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+              "$ref": "#/definitions/NewRegistrationDataObject"
             }
           }
         ],
@@ -1855,7 +1982,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ToCreateRegistrationDataObject"
+              "$ref": "#/definitions/NewRegistrationDataObject"
             }
           }
         ],
@@ -2424,7 +2551,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GroupDataObject"
+              "$ref": "#/definitions/BaseGroupDataObject"
             }
           }
         ],
@@ -2482,7 +2609,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/GroupDataObject"
+              "$ref": "#/definitions/BaseGroupDataObject"
             }
           }
         ],
@@ -2512,7 +2639,7 @@
         }
       }
     },
-    "/beneficiary": {
+    "/beneficiaries": {
       "get": {
         "operationId": "listBeneficiary",
         "summary": "List beneficiary",
@@ -2525,37 +2652,88 @@
         ],
         "parameters": [
           {
-            "name": "taxpayerIdentificationNumber",
-            "in": "query",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "locked",
+            "name": "groupId",
             "in": "query",
             "required": false,
-            "type": "boolean",
-            "description": "Filter the beneficiary matching locked state"
+            "type": "string",
+            "description": "Filter the beneficiaries whose group identifier match the group identifer provided"
           },
           {
-            "name": "dateOfBirth",
+            "name": "registrationId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose registration identifier match the registration identifer provided"
+          },
+          {
+            "name": "firstName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose name match the name provided"
+          },
+          {
+            "name": "lastName",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose name match the name provided"
+          },
+          {
+            "name": "medicareId",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose Medicare number match the Medicare number provided"
+          },
+          {
+            "name": "medicalRecordNumber",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose MRN match the MRN provided"
+          },
+          {
+            "name": "gender",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "description": "Filter the beneficiaries whose gender match the gender provided"
+          },
+          {
+            "name": "birthDateFrom",
             "in": "query",
             "required": false,
             "type": "string",
             "format": "date",
-            "description": "Filter the beneficiary matching the birth date"
+            "description": "Filter the beneficiaries that are born after the date provided. Example '2016-10-25'"
+          },
+          {
+            "name": "birthDateTill",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "date",
+            "description": "Filter the beneficiaries that are born before the date provided. Example '2016-11-16'"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "type": "string",
+            "required": false,
+            "description": "Filter the beneficiaries that match the partial text"
           },
           {
             "name": "fields",
             "in": "query",
             "type": "string",
-            "description": "A comma seperated list of property names. If provided only those attributes will be populated."
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example medicareId,firstName,lastName"
           },
           {
             "name": "sort",
             "in": "query",
             "type": "string",
-            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus)."
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -lastName,zipCode"
           }
         ],
         "responses": {
@@ -2577,6 +2755,211 @@
           },
           "422": {
             "description": "Error validating filter parameter value",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      }
+    },
+    "/beneficiaries/{id}": {
+      "get": {
+        "operationId": "getBeneficiary",
+        "summary": "Fetches a single Beneficiary",
+        "description": "Will fetch the Beneficiary identified by medicare identification number.",
+        "tags": [
+          "Beneficiary"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The medicare identification number of the Beneficiary to retrieve"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be populated. Example \"name\""
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided result will be sorted based on that. To sort in reverse chronological order prefix property name with -(minus). Example -name,taxIdentificationNumber"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The Beneficiary object corresponding to the given medicare identification number",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/BeneficiaryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Beneficiary not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Beneficiary data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "removeBeneficiary",
+        "summary": "Removes a single Beneficiary",
+        "description": "Removes a single Beneficiary",
+        "tags": [
+          "Beneficiary"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The medicare identification number of the Beneficiary to modify"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Success (No Content)"
+          },
+          "404": {
+            "description": "Beneficiary not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating beneficiary data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "replaceBeneficiary",
+        "summary": "Updates a single Beneficiary",
+        "description": "Updates a single Beneficiary with PUT (full-replacement) semantics",
+        "tags": [
+          "Beneficiary"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The medicare number of the Beneficiary to modify"
+          },
+          {
+            "name": "beneficiary",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseBeneficiaryDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated Beneficiary object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/BeneficiaryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Beneficiary not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Beneficiary data.",
+            "schema": {
+              "$ref": "#/definitions/InputParamValidationError"
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateBeneficiary",
+        "summary": "Updates a single Beneficiary",
+        "description": "Updates a single Beneficiary with PATCH (delta) semantics",
+        "tags": [
+          "Beneficiary"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "The medicare identification number (TIN) of the Beneficiary to modify"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "type": "string",
+            "description": "A comma seperated list of property names. If provided only those attributes will be updated. Example \"name\". If not provided, then only properites with non-null values in input will be updated."
+          },
+          {
+            "name": "beneficiary",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BaseBeneficiaryDataObject"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The updated Beneficiary object",
+            "schema": {
+              "properties": {
+                "data": {
+                  "$ref": "#/definitions/BeneficiaryDataObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Beneficiary not found",
+            "schema": {
+              "$ref": "#/definitions/InvalidInputError"
+            }
+          },
+          "422": {
+            "description": "Error validating Beneficiary data.",
             "schema": {
               "$ref": "#/definitions/InputParamValidationError"
             }
